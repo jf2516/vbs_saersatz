@@ -1,9 +1,9 @@
 '# ---------------------------------------------------------------
 '# SAersatz.vbs
-'# РћС‚РїСЂР°РІРєР° С„Р°Р№Р»РѕРІ С‡РµСЂРµР· РџРўРљ СЃ РїРѕРјРѕС‰СЊСЋ С‚СЂР°РЅСЃРїРѕСЂС‚РЅС‹С… РєРѕРЅРІРµСЂС‚РѕРІ
-'# РЅР° РѕСЃРЅРѕРІР°РЅРёРё РїРёСЃСЊРјР° Р‘Р°РЅРєР° Р РѕСЃСЃРёРё РѕС‚ 08.12.2021 N Рў258-15-4/7317
-'# Р”Р°С‚Р° СЃРѕР·РґР°РЅРёСЏ      : 20.12.2021
-'# Р”Р°С‚Р° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ: 20.12.2021
+'# Отправка файлов через ПТК с помощью транспортных конвертов
+'# на основании письма Банка России от 08.12.2021 N Т258-15-4/7317
+'# Дата создания      : 20.12.2021
+'# Дата редактирования: 20.12.2021
 '#----------------------------------------------------------------
 
 Set Shell = WScript.CreateObject("WScript.Shell")
@@ -19,13 +19,13 @@ Dim SubDir     : SubDir = array("in", "out", "ptk", "backup")
 
 
 Function To36(Digit)
-'#-РїРµСЂРµРІРѕРґ РІ 36 СЃРёСЃС‚РµРјСѓ
+'#-перевод в 36 систему
     Abc36 = "123456789abcdefghijklmnopqrstuvwxyz"
     To36 = Mid(Abc36, Digit, 1)  
 End Function
 
 Function LeadZero(ZeroCount, Number)
-'#-РґРѕР±Р°РІР»РµРЅРёРµ РІРµРґСѓС‰РёС… РЅСѓР»РµР№
+'#-добавление ведущих нулей
 Dim l
    l=Len(Number)       
    If l<ZeroCount Then
@@ -36,14 +36,14 @@ Dim l
 End Function
 
 Sub CreateSubDir(DirName)
-'#-РїСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ РєР°С‚Р°Р»РѕРіР°. Р•СЃР»Рё РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚, С‚Рѕ СЃРѕР·РґР°С‚СЊ   
+'#-проверка наличия каталога. Если отсутствует, то создать   
    If Not FSO.FolderExists(DirName) Then 
       Shell.Run "%comspec% /c mkdir " & DirName, 0, True
    End If
 End Sub
 
 Function CreateIndexFile(FileType)
-'#-РЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС‡С‘С‚С‡РёРєР°
+'#-нициализация счётчика
     Set fd = FSO.OpenTextFile(IndexDir & FileType & FileTypeExt, 2, True)
     fd.WriteLine CurrentDate & "|" & 1
     fd.Close
@@ -51,18 +51,18 @@ Function CreateIndexFile(FileType)
 End Function
 
 Function ChangeIndex(FileType)
-'#-СѓРІРµР»РёС‡РµРЅРёРµ СЃС‡С‘С‚С‡РёРєР°
+'#-увеличение счётчика
 Dim Index
 Dim WorkDate
     
-    '#-С‡РёС‚Р°РµРј РїСЂРµРґС‹РґСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ
+    '#-читаем предыдущее значение
     Set fd = FSO.OpenTextFile(IndexDir & FileType & FileTypeExt, 1, True)
     Ret = Split(fd.ReadLine,"|")
     WorkDate = Ret(0)
     Index    = Ret(1)
     fd.close
     
-    '#-РѕР±РЅРѕРІР»СЏРµРј
+    '#-обновляем
     If DateDiff("d", WorkDate, CurrentDate) = 0 Then
         Index = Index + 1
         Set fd = FSO.OpenTextFile(IndexDir & FileType & FileTypeExt, 2, True)
@@ -107,5 +107,5 @@ For Each i in Forms
     
 Next
 
-'#-РєРѕРЅРµС† С„Р°Р№Р»Р°
+'#-конец файла
 
